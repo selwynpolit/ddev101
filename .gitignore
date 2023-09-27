@@ -1,0 +1,10 @@
+# Ignore paths that contain user-generated content.
+web/files
+web/sites/*/files
+web/sites/*/private
+web/sites/*/private-files
+
+vendor/
+node_modules
+
+
