@@ -1,0 +1,8 @@
+name: drushonhost
+repository: rfay/ddev-drushonhost
+version: v0.0.1
+install_date: "2023-11-12T09:50:45-06:00"
+project_files:
+    - config.drushonhost.yaml
+global_files: []
+removal_actions: []
