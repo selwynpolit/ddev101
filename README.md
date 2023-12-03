@@ -1,5 +1,8 @@
 # Drupal 10 DDEV101 play space #1
 
+## 11-27-23: Add fish shell to ddev container
+
+
 ## 9-27-23 OpenAI
 
 ## 9-27-23: Image effects
