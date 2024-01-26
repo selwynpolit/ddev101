@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -10,7 +10,6 @@ use Drupal\monolog\Logger\LoggerInterfacesAdapter;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 use Symfony\Component\HttpKernel\Log\DebugLoggerInterface;
 
@@ -61,7 +60,7 @@ class LogsDataCollector extends DataCollector implements HasPanelInterface, Late
 
           return $log;
         },
-        $adapted_logger->getLogs()
+        $adapted_logger->getLogs(),
       );
     }
   }
@@ -69,7 +68,7 @@ class LogsDataCollector extends DataCollector implements HasPanelInterface, Late
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 

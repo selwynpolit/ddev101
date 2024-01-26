@@ -1,12 +1,11 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 
 /**
@@ -33,7 +32,7 @@ class MemoryDataCollector extends DataCollector implements LateDataCollectorInte
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [
       'memory' => 0,
       'memory_limit' => $this->convertToBytes(ini_get('memory_limit')),
@@ -70,7 +69,7 @@ class MemoryDataCollector extends DataCollector implements LateDataCollectorInte
   /**
    * Save the memory used value.
    */
-  public function updateMemoryUsage() {
+  public function updateMemoryUsage(): void {
     $this->data['memory'] = memory_get_peak_usage(TRUE);
   }
 

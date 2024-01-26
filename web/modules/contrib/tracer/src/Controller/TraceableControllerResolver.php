@@ -1,9 +1,10 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\tracer\Controller;
 
+use Drupal\tracer\TracerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Controller\ControllerResolverInterface;
 
@@ -17,23 +18,22 @@ class TraceableControllerResolver implements ControllerResolverInterface {
    *
    * @param \Symfony\Component\HttpKernel\Controller\ControllerResolverInterface $resolver
    *   The resolver to wrap.
+   * @param \Drupal\tracer\TracerInterface $tracer
+   *   The tracer service.
    */
   public function __construct(
-    protected readonly ControllerResolverInterface $resolver) {
+    protected readonly ControllerResolverInterface $resolver,
+    protected readonly TracerInterface $tracer
+  ) {
   }
 
   /**
    * {@inheritdoc}
    */
   public function getController(Request $request): callable|FALSE {
-    /** @var \Drupal\tracer\TracerInterface $tracer */
-    $tracer = \Drupal::service('tracer.tracer');
-
-    $span = $tracer->start('get_controller', $request->getUri());
-
+    $span = $this->tracer->start('get_controller', $request->getUri());
     $ret = $this->resolver->getController($request);
-
-    $tracer->stop($span);
+    $this->tracer->stop($span);
 
     return $ret;
   }

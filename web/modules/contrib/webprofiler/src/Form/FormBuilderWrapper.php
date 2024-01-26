@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Form;
 
@@ -47,7 +47,7 @@ class FormBuilderWrapper extends FormBuilder {
         'class' => [
           'class' => $class,
           'method' => 'buildForm',
-          'file' => $method->getFilename(),
+          'file' => $method->getFileName(),
           'line' => $method->getStartLine(),
         ],
         'elements' => $elements,

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Entity;
 
@@ -38,7 +38,7 @@ class ConfigEntityStorageDecoratorGenerator implements DecoratorGeneratorInterfa
   /**
    * {@inheritdoc}
    */
-  public function generate() {
+  public function generate(): void {
     $classes = $this->getClasses();
 
     foreach ($classes as $class) {
@@ -96,7 +96,7 @@ class ConfigEntityStorageDecoratorGenerator implements DecoratorGeneratorInterfa
           $classes[$definition->id()] = [
             'id' => $definition->id(),
             'class' => $node->name->name,
-            'interface' => '\\' . implode('\\', $node->implements[0]->parts),
+            'interface' => '\\' . implode('\\', $node->implements[0]->getParts()),
             'decoratorClass' => '\\Drupal\\webprofiler\\Entity\\' . $node->name->name . 'Decorator',
           ];
         }
@@ -163,9 +163,9 @@ class ConfigEntityStorageDecoratorGenerator implements DecoratorGeneratorInterfa
 
     if ($node->extends !== NULL &&
       $node->implements !== NULL &&
-      $node->extends->parts[0] == 'ConfigEntityStorage' &&
+      $node->extends->getParts()[0] == 'ConfigEntityStorage' &&
       isset($node->implements[0]) &&
-      $node->implements[0]->parts[0] != ''
+      $node->implements[0]->getParts()[0] != ''
     ) {
       return TRUE;
     }
@@ -248,7 +248,7 @@ class ConfigEntityStorageDecoratorGenerator implements DecoratorGeneratorInterfa
             array_map(function ($param) {
               return new Literal('$' . $param);
             }, $method['params']),
-          ]
+          ],
         );
     }
 
@@ -265,7 +265,7 @@ class ConfigEntityStorageDecoratorGenerator implements DecoratorGeneratorInterfa
    * @param string $body
    *   The class body.
    */
-  private function writeDecorator(string $name, string $body) {
+  private function writeDecorator(string $name, string $body): void {
     $storage = PhpStorageFactory::get('webprofiler');
 
     if (!$storage->exists($name)) {

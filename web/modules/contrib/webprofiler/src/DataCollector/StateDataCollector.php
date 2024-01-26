@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects states data.
@@ -32,7 +31,7 @@ class StateDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -42,7 +41,7 @@ class StateDataCollector extends DataCollector implements HasPanelInterface {
    * @param string $key
    *   The state key.
    */
-  public function addState($key) {
+  public function addState($key): void {
     $this->data['state_get'][$key] = isset($this->data['state_get'][$key]) ? $this->data['state_get'][$key] + 1 : 1;
   }
 
@@ -64,12 +63,12 @@ class StateDataCollector extends DataCollector implements HasPanelInterface {
 
     array_walk(
       $data,
-      function (&$key, $data) {
+      function (&$key, $data): void {
         $key = [
           $data,
           $key,
         ];
-      }
+      },
     );
 
     return [

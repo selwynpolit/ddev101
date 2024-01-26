@@ -1,14 +1,14 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
 use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
+use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects routing data.
@@ -42,6 +42,9 @@ class RoutingDataCollector extends DataCollector implements HasPanelInterface {
       $this->data['routing'][] = [
         'name' => $route_name,
         'path' => $route->getPath(),
+        'defaults' => $route->getDefaults(),
+        'requirements' => $route->getRequirements(),
+        'options' => $route->getOptions(),
       ];
     }
   }
@@ -49,7 +52,7 @@ class RoutingDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -66,7 +69,7 @@ class RoutingDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Twig callback for displaying the routes.
    */
-  public function routing() {
+  public function routing(): array {
     return $this->data['routing'];
   }
 
@@ -83,14 +86,18 @@ class RoutingDataCollector extends DataCollector implements HasPanelInterface {
         '#header' => [
           $this->t('Name'),
           $this->t('Path'),
+          $this->t('Title'),
+          $this->t('Controller'),
         ],
         '#rows' => array_map(
           function ($data) {
-              return [
-                $data['name'],
-                $data['path'],
-              ];
-          }, $data
+            return [
+              $data['name'],
+              $data['path'],
+              $data['defaults']['_title'] ?? '',
+              $this->renderControllerData($data['defaults']),
+            ];
+          }, $data,
         ),
         '#attributes' => [
           'class' => [
@@ -100,6 +107,36 @@ class RoutingDataCollector extends DataCollector implements HasPanelInterface {
         '#sticky' => TRUE,
       ],
     ];
+  }
+
+  /**
+   * Render the controller data.
+   *
+   * @param array $data
+   *   The controller data.
+   */
+  private function renderControllerData(array $data): TranslatableMarkup|string {
+    if (array_key_exists('_controller', $data)) {
+      return $this->t('Controller: %controller', ['%controller' => $data['_controller']]);
+    }
+
+    if (array_key_exists('_form', $data)) {
+      return $this->t('Form: %form', ['%form' => $data['_form']]);
+    }
+
+    if (array_key_exists('_entity_form', $data)) {
+      return $this->t('Entity form: %entity_form', ['%entity_form' => $data['_entity_form']]);
+    }
+
+    if (array_key_exists('_entity_view', $data)) {
+      return $this->t('Entity view: %entity_view', ['%entity_view' => $data['_entity_view']]);
+    }
+
+    if (array_key_exists('_entity_list', $data)) {
+      return $this->t('Entity list: %entity_list', ['%entity_list' => $data['_entity_list']]);
+    }
+
+    return '';
   }
 
 }

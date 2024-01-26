@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -9,7 +9,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webprofiler\Form\FormBuilderWrapper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects forms data.
@@ -49,7 +48,7 @@ class FormsDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -60,7 +59,7 @@ class FormsDataCollector extends DataCollector implements HasPanelInterface {
    *   The list of collected forms.
    */
   public function getForms(): array {
-    return (!empty($this->data['forms']) && is_array($this->data['forms'])) ? $this->data['forms'] : [];
+    return $this->data['forms'];
   }
 
   /**

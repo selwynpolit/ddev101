@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
 use Drupal\tracer\TracerFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 
 /**
@@ -46,7 +45,7 @@ class TimeDataCollector extends DataCollector implements LateDataCollectorInterf
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -63,7 +62,7 @@ class TimeDataCollector extends DataCollector implements LateDataCollectorInterf
    * @param \Symfony\Component\Stopwatch\StopwatchEvent[] $events
    *   The request events.
    */
-  public function setEvents(array $events) {
+  public function setEvents(array $events): void {
     foreach ($events as $event) {
       $event->ensureStopped();
     }

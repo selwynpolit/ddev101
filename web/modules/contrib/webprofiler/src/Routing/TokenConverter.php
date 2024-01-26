@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Routing;
 
@@ -20,10 +20,9 @@ class TokenConverter implements ParamConverterInterface {
     // more than one language is active and "Account administration pages" is
     // enabled on admin/config/regional/language/detection. See #2710787 for
     // more information.
-    // phpcs:disable
     /** @var \Drupal\webprofiler\Profiler\Profiler $profiler */
+    // @phpstan-ignore-next-line
     $profiler = \Drupal::service('webprofiler.profiler');
-    // phpcs:enable
 
     if (NULL == $profiler) {
       return NULL;
@@ -41,10 +40,11 @@ class TokenConverter implements ParamConverterInterface {
   /**
    * {@inheritdoc}
    */
-  public function applies($definition, $name, Route $route) {
-    if (!empty($definition['type']) && $definition['type'] === 'webprofiler:token') {
+  public function applies($definition, $name, Route $route): bool {
+    if (array_key_exists('type', $definition) && $definition['type'] === 'webprofiler:token') {
       return TRUE;
     }
+
     return FALSE;
   }
 

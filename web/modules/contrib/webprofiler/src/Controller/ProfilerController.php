@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Controller;
 
@@ -55,19 +55,6 @@ class ProfilerController extends ControllerBase {
   private ContentSecurityPolicyHandler $cspHandler;
 
   /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container): ProfilerController {
-    return new static(
-      $container->get('url_generator'),
-      $container->get('webprofiler.profiler'),
-      $container->get('renderer'),
-      $container->get('webprofiler.template_manager'),
-      $container->get('webprofiler.csp')
-    );
-  }
-
-  /**
    * ProfilerController constructor.
    *
    * @param \Drupal\Core\Routing\UrlGeneratorInterface $generator
@@ -90,6 +77,19 @@ class ProfilerController extends ControllerBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): ProfilerController {
+    return new static(
+      $container->get('url_generator'),
+      $container->get('webprofiler.profiler'),
+      $container->get('renderer'),
+      $container->get('webprofiler.template_manager'),
+      $container->get('webprofiler.csp'),
+    );
+  }
+
+  /**
    * Renders the Web Debug Toolbar.
    *
    * @param \Symfony\Component\HttpFoundation\Request $request
@@ -109,7 +109,9 @@ class ProfilerController extends ControllerBase {
 
     $this->profiler->disable();
 
-    if (!$profile = $this->profiler->loadProfile($token)) {
+    $profile = $this->profiler->loadProfile($token);
+
+    if ($profile === NULL) {
       return new Response('', 404, ['Content-Type' => 'text/html']);
     }
 

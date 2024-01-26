@@ -2,6 +2,7 @@
 
 namespace Drupal\Tests\image_effects\Functional\Effect;
 
+use Drupal\imagemagick\ImagemagickExecArguments;
 use Drupal\Tests\image_effects\Functional\ImageEffectsTestBase;
 
 /**
@@ -76,9 +77,9 @@ class ConvolutionTest extends ImageEffectsTestBase {
       case 'imagemagick':
         // For the Imagemagick toolkit, check the command line argument has
         // been formatted properly.
-        $find = $image->getToolkit()->arguments()->find('/^./', NULL, ['image_toolkit_operation' => 'convolution']);
-        $arg = array_shift($find);
-        $this->assertEquals("-morphology Convolve '3x3:1,1,1 1,1,1 1,1,1'", $arg['argument']);
+        /** @var \Drupal\imagemagick\Plugin\ImageToolkit\ImagemagickToolkit $toolkit */
+        $toolkit = $image->getToolkit();
+        $this->assertMatchesRegularExpression("/-morphology Convolve [\']?3x3:1,1,1 1,1,1 1,1,1[\']?/", $toolkit->arguments()->toString(ImagemagickExecArguments::POST_SOURCE));
         break;
 
     }

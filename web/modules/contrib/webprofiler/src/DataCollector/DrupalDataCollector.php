@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -8,7 +8,6 @@ use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Url;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\HttpKernel\DataCollector\LateDataCollectorInterface;
 use Symfony\Component\Process\Exception\LogicException;
 use Symfony\Component\Process\Exception\ProcessFailedException;
@@ -86,7 +85,7 @@ class DrupalDataCollector extends DataCollector implements LateDataCollectorInte
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -121,15 +120,15 @@ class DrupalDataCollector extends DataCollector implements LateDataCollectorInte
   /**
    * Gets the git commit info, if any.
    */
-  public function getGitCommit() {
-    return $this->data['git_commit'];
+  public function getGitCommit(): ?string {
+    return $this->data['git_commit'] ?? 'n/a';
   }
 
   /**
    * Gets the git commit SHA, if any.
    */
-  public function getAbbrGitCommit() {
-    return $this->data['abbr_git_commit'];
+  public function getAbbrGitCommit(): ?string {
+    return $this->data['abbr_git_commit'] ?? 'n/a';
   }
 
   /**
@@ -201,7 +200,7 @@ class DrupalDataCollector extends DataCollector implements LateDataCollectorInte
    * @param array $data
    *   The collected data.
    */
-  private function addGitInfo(array &$data) {
+  private function addGitInfo(array &$data): void {
     try {
       $process = new Process(
         [
@@ -210,7 +209,7 @@ class DrupalDataCollector extends DataCollector implements LateDataCollectorInte
           '-1',
           '--pretty=format:"%H - %s (%ci)"',
           '--abbrev-commit',
-        ]
+        ],
       );
       $process->setTimeout(3600);
       $process->mustRun();
@@ -223,7 +222,7 @@ class DrupalDataCollector extends DataCollector implements LateDataCollectorInte
           '-1',
           '--pretty=format:"%h"',
           '--abbrev-commit',
-        ]
+        ],
       );
       $process->setTimeout(3600);
       $process->mustRun();

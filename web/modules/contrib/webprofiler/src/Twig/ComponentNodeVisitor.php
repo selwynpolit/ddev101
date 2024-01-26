@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Twig;
 
@@ -47,7 +47,7 @@ final class ComponentNodeVisitor implements NodeVisitorInterface {
     }
     $component = $this->getComponent($node);
 
-    if (!$component) {
+    if ($component == NULL) {
       return $node;
     }
 

@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\tracer;
 
@@ -24,14 +24,11 @@ class TracerFactory {
    *
    * @param \Drupal\tracer\TracerPluginManager $tracerPluginManager
    *   The Tracer plugin manager.
-   * @param \Drupal\Core\Site\Settings $settings
-   *   The site settings.
    */
   public function __construct(
-    protected readonly TracerPluginManager $tracerPluginManager,
-    Settings $settings
+    protected readonly TracerPluginManager $tracerPluginManager
   ) {
-    $tracerPlugin = $settings->get('tracer_plugin', NULL);
+    $tracerPlugin = Settings::get('tracer_plugin', NULL);
 
     try {
       if ($tracerPlugin === NULL) {

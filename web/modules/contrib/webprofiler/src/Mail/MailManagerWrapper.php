@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Mail;
 
@@ -34,6 +34,9 @@ class MailManagerWrapper extends MailManager {
     private readonly MailDataCollector $mailDataCollector
   ) {
     parent::__construct($namespaces, $cache_backend, $module_handler, $config_factory, $logger_factory, $string_translation, $renderer);
+
+    $this->alterInfo('mail_backend_info');
+    $this->setCacheBackend($cache_backend, 'mail_backend_plugins');
   }
 
   /**
@@ -43,7 +46,7 @@ class MailManagerWrapper extends MailManager {
     $message = $this->mailManager->mail($module, $key, $to, $langcode, $params, $reply, $send);
 
     $instance = $this->mailManager->getInstance(
-      ['module' => $module, 'key' => $key]
+      ['module' => $module, 'key' => $key],
     );
     $this->mailDataCollector->addMessage($message, $instance);
 

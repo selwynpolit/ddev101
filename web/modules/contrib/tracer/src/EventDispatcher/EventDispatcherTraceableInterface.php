@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\tracer\EventDispatcher;
 
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
@@ -20,7 +22,7 @@ interface EventDispatcherTraceableInterface extends EventDispatcherInterface {
   /**
    * Return an array of all the events that have not been dispatched.
    *
-   * @return mixed
+   * @return array
    *   An array of all the events that have not been dispatched.
    */
   public function getNotCalledListeners(): array;

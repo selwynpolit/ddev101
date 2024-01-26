@@ -2,14 +2,13 @@
  * @file
  * Tab panel app.
  */
-(function (Drupal) {
-
-  "use strict";
-
+((Drupal) => {
   function openTab(name) {
-    const contents = document.getElementsByClassName('webprofiler__tabs__content');
+    const contents = document.getElementsByClassName(
+      'webprofiler__tabs__content',
+    );
     for (let i = 0; i < contents.length; i++) {
-      contents[i].style.display = "none";
+      contents[i].style.display = 'none';
     }
 
     const labels = document.getElementsByClassName('webprofiler__tabs__label');
@@ -24,14 +23,16 @@
   }
 
   Drupal.behaviors.webprofiler_tab = {
-    attach: function (context) {
-      context.querySelectorAll('.webprofiler__tabs__label').forEach(function (element) {
-        element.addEventListener('click', function (event) {
-          openTab(event.currentTarget.dataset.tabId);
+    attach(context) {
+      context
+        .querySelectorAll('.webprofiler__tabs__label')
+        .forEach((element) => {
+          element.addEventListener('click', (event) => {
+            openTab(event.currentTarget.dataset.tabId);
+          });
         });
-      });
 
       openTab('js-webprofiler__tab-0');
-    }
-  }
+    },
+  };
 })(Drupal);

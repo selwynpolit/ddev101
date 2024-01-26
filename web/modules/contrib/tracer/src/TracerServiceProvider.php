@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\tracer;
 
@@ -16,7 +16,7 @@ class TracerServiceProvider extends ServiceProviderBase {
   /**
    * {@inheritdoc}
    */
-  public function alter(ContainerBuilder $container) {
+  public function alter(ContainerBuilder $container): void {
     $container->getDefinition('event_dispatcher')
       ->setClass('Drupal\tracer\EventDispatcher\TraceableEventDispatcher')
       ->addMethodCall('setTracer',

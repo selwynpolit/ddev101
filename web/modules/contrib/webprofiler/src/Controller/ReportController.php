@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Controller;
 
@@ -18,43 +18,27 @@ use Symfony\Component\HttpFoundation\Request;
 class ReportController extends ControllerBase {
 
   /**
-   * The Profiler service.
-   *
-   * @var \Drupal\webprofiler\Profiler\Profiler
-   */
-  private Profiler $profiler;
-
-  /**
-   * The Date formatter service.
-   *
-   * @var \Drupal\Core\Datetime\DateFormatter
-   */
-  private DateFormatter $dateFormatter;
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container) {
-    return new static(
-      $container->get('webprofiler.profiler'),
-      $container->get('date.formatter'),
-    );
-  }
-
-  /**
    * DashboardController constructor.
    *
    * @param \Drupal\webprofiler\Profiler\Profiler $profiler
    *   The Profiler service.
-   * @param \Drupal\Core\Datetime\DateFormatter $date_formatter
+   * @param \Drupal\Core\Datetime\DateFormatter $dateFormatter
    *   The Date formatter service.
    */
   final public function __construct(
-    Profiler $profiler,
-    DateFormatter $date_formatter
+    private readonly Profiler $profiler,
+    private readonly DateFormatter $dateFormatter
   ) {
-    $this->profiler = $profiler;
-    $this->dateFormatter = $date_formatter;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container): ReportController {
+    return new static(
+      $container->get('webprofiler.profiler'),
+      $container->get('date.formatter'),
+    );
   }
 
   /**
@@ -78,7 +62,7 @@ class ReportController extends ControllerBase {
     $profiles = $this->profiler->find($ip, $url, $limit, $method, '', '');
 
     $rows = [];
-    if (count($profiles)) {
+    if (count($profiles) > 0) {
       foreach ($profiles as $profile) {
         $row = [];
         $row[] = Link::fromTextAndUrl($profile['token'], new Url('webprofiler.dashboard', ['token' => $profile['token']]))
@@ -101,6 +85,7 @@ class ReportController extends ControllerBase {
       ];
     }
 
+    $build = [];
     $build['filters'] = $this->formBuilder()
       ->getForm('Drupal\\webprofiler\\Form\\ReportFilterForm');
 

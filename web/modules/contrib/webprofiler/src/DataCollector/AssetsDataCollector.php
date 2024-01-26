@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -9,7 +9,6 @@ use Drupal\Core\Asset\LibraryDiscoveryInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects assets data.
@@ -51,7 +50,7 @@ class AssetsDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -61,7 +60,7 @@ class AssetsDataCollector extends DataCollector implements HasPanelInterface {
    * @param array $jsAsset
    *   A javascript asset.
    */
-  public function addJsAsset(array $jsAsset) {
+  public function addJsAsset(array $jsAsset): void {
     $this->data['js'] = NestedArray::mergeDeepArray([
       $jsAsset,
       $this->data['js'],
@@ -74,7 +73,7 @@ class AssetsDataCollector extends DataCollector implements HasPanelInterface {
    * @param array $cssAsset
    *   A css asset.
    */
-  public function addCssAsset(array $cssAsset) {
+  public function addCssAsset(array $cssAsset): void {
     $this->data['css'] = NestedArray::mergeDeepArray([
       $cssAsset,
       $this->data['css'],
@@ -87,7 +86,7 @@ class AssetsDataCollector extends DataCollector implements HasPanelInterface {
    * @param array $libraries
    *   A list of libraries.
    */
-  public function setLibraries(array $libraries) {
+  public function setLibraries(array $libraries): void {
     sort($libraries);
 
     $data = [];
@@ -106,7 +105,7 @@ class AssetsDataCollector extends DataCollector implements HasPanelInterface {
    * @param array $placeholders
    *   A list of placeholders.
    */
-  public function setPlaceholders(array $placeholders) {
+  public function setPlaceholders(array $placeholders): void {
     $this->data['placeholders'] = $placeholders;
   }
 

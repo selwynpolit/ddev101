@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler;
 
@@ -91,7 +91,7 @@ class Decorator {
     }
 
     throw new \Exception(
-      'Undefined method - ' . get_class($this->getOriginalObject()) . '::' . $method
+      'Undefined method - ' . get_class($this->getOriginalObject()) . '::' . $method,
     );
   }
 
@@ -108,6 +108,7 @@ class Decorator {
   public function __get(string $property): mixed {
     $object = $this->getOriginalObject();
     if (property_exists($object, $property)) {
+      // @phpstan-ignore-next-line
       return $object->$property;
     }
 

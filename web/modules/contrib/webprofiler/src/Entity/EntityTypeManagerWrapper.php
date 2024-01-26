@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\Entity;
 
@@ -65,6 +65,9 @@ class EntityTypeManagerWrapper extends EntityTypeManager implements EntityTypeMa
    */
   public function __construct(EntityTypeManagerInterface $entity_manager, \Traversable $namespaces, ModuleHandlerInterface $module_handler, CacheBackendInterface $cache, TranslationInterface $string_translation, ClassResolverInterface $class_resolver, EntityLastInstalledSchemaRepositoryInterface $entity_last_installed_schema_repository) {
     $this->entityManager = $entity_manager;
+
+    $this->setCacheBackend($cache, 'entity_type', ['entity_types']);
+    $this->alterInfo('entity_type');
 
     parent::__construct($namespaces, $module_handler, $cache, $string_translation, $class_resolver, $entity_last_installed_schema_repository);
   }
@@ -142,7 +145,7 @@ class EntityTypeManagerWrapper extends EntityTypeManager implements EntityTypeMa
    * @return string[]
    *   The properties to serialize.
    */
-  public function __sleep() {
+  public function __sleep(): array {
     return ['loaded', 'rendered'];
   }
 
@@ -159,10 +162,9 @@ class EntityTypeManagerWrapper extends EntityTypeManager implements EntityTypeMa
    */
   private function getStorageDecorator(string $entity_type, object $handler): object {
     // Loaded this way to avoid circular references.
-    // phpcs:disable
     /** @var \Drupal\webprofiler\DecoratorGeneratorInterface $decoratorGenerator */
+    // @phpstan-ignore-next-line
     $decoratorGenerator = \Drupal::service('webprofiler.config_entity_storage_decorator_generator');
-    // phpcs:enable
 
     $decorators = $decoratorGenerator->getDecorators();
 

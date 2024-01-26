@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\EventListener;
 
@@ -71,15 +71,15 @@ class ToolbarListener implements EventSubscriberInterface {
    * @param \Symfony\Component\HttpKernel\Event\ResponseEvent $event
    *   A response event.
    */
-  public function onKernelResponse(ResponseEvent $event) {
+  public function onKernelResponse(ResponseEvent $event): void {
     $response = $event->getResponse();
     $request = $event->getRequest();
 
-    if ($response->headers->has('X-Debug-Token') && NULL !== $this->urlGenerator) {
+    if ($response->headers->has('X-Debug-Token') && NULL != $this->urlGenerator) {
       try {
         $response->headers->set(
           'X-Debug-Token-Link',
-          $this->urlGenerator->generate('webprofiler.dashboard', ['token' => $response->headers->get('X-Debug-Token')], UrlGeneratorInterface::ABSOLUTE_URL)
+          $this->urlGenerator->generate('webprofiler.dashboard', ['token' => $response->headers->get('X-Debug-Token')], UrlGeneratorInterface::ABSOLUTE_URL),
         );
       }
       catch (\Exception $e) {
@@ -102,7 +102,8 @@ class ToolbarListener implements EventSubscriberInterface {
       return;
     }
 
-    if ($response->headers->has('X-Debug-Token') && $response->isRedirect() && $this->config->get('intercept_redirects') && 'html' === $request->getRequestFormat()) {
+    $intercept_redirects = (bool) $this->config->get('intercept_redirects');
+    if ($response->headers->has('X-Debug-Token') && $response->isRedirect() && $intercept_redirects && 'html' === $request->getRequestFormat()) {
       $toolbarRedirect = [
         '#theme' => 'webprofiler_toolbar_redirect',
         '#location' => $response->headers->get('Location'),
@@ -137,7 +138,7 @@ class ToolbarListener implements EventSubscriberInterface {
    * @param array $nonces
    *   Nonces used in Content-Security-Policy header.
    */
-  protected function injectToolbar(Response $response, Request $request, array $nonces) {
+  protected function injectToolbar(Response $response, Request $request, array $nonces): void {
     $content = $response->getContent();
     if (FALSE === $content) {
       return;

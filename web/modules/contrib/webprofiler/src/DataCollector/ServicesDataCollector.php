@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -9,7 +9,6 @@ use Drupal\tracer\DependencyInjection\TraceableContainer;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects services data.
@@ -46,7 +45,7 @@ class ServicesDataCollector extends DataCollector implements HasPanelInterface {
    * {@inheritdoc}
    */
   public function collect(Request $request, Response $response, \Throwable $exception = NULL): void {
-    if ($this->getServicesCount()) {
+    if ($this->getServicesCount() > 0) {
       $tracedData = [];
       if ($this->container instanceof TraceableContainer) {
         $tracedData = $this->container->getTracedData();
@@ -65,7 +64,7 @@ class ServicesDataCollector extends DataCollector implements HasPanelInterface {
    * @param array $services
    *   Array of services.
    */
-  public function setServices(array $services) {
+  public function setServices(array $services): void {
     $this->data['services'] = $services;
   }
 
@@ -136,7 +135,7 @@ class ServicesDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -236,7 +235,7 @@ class ServicesDataCollector extends DataCollector implements HasPanelInterface {
     foreach ($data as $service) {
       $class_link = '';
       if (isset($service['value']['file'])) {
-        $class_link = $this->renderClasslink($service['value']['file'], 0, $service['value']['class']);
+        $class_link = $this->renderClassLink($service['value']['file'], 0, $service['value']['class']);
       }
 
       $rows[] = [

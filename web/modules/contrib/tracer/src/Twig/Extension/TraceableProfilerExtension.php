@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\tracer\Twig\Extension;
 
@@ -14,13 +14,6 @@ use Twig\Profiler\Profile;
 class TraceableProfilerExtension extends ProfilerExtension {
 
   /**
-   * The Tracer instance.
-   *
-   * @var \Drupal\tracer\TracerInterface
-   */
-  private TracerInterface $tracer;
-
-  /**
    * Traced events.
    *
    * @var \SplObjectStorage
@@ -32,18 +25,21 @@ class TraceableProfilerExtension extends ProfilerExtension {
    *
    * @param \Twig\Profiler\Profile $profile
    *   The Twig profile.
+   * @param \Drupal\tracer\TracerInterface $tracer
+   *   The tracer service.
    */
-  public function __construct(Profile $profile) {
+  public function __construct(
+    protected readonly Profile $profile,
+    protected readonly TracerInterface $tracer
+  ) {
     parent::__construct($profile);
-
-    $this->tracer = \Drupal::service('tracer.tracer');
     $this->events = new \SplObjectStorage();
   }
 
   /**
    * {@inheritdoc}
    */
-  public function enter(Profile $profile) {
+  public function enter(Profile $profile): void {
     if ($profile->isTemplate()) {
       $this->events[$profile] = $this->tracer->start('Twig', $profile->getName());
     }
@@ -54,7 +50,7 @@ class TraceableProfilerExtension extends ProfilerExtension {
   /**
    * {@inheritdoc}
    */
-  public function leave(Profile $profile) {
+  public function leave(Profile $profile): void {
     parent::leave($profile);
 
     if ($profile->isTemplate()) {

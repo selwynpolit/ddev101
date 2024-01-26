@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -9,7 +9,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webprofiler\Views\ViewExecutableFactoryWrapper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects views data.
@@ -29,7 +28,6 @@ class ViewsDataCollector extends DataCollector implements HasPanelInterface {
   public function __construct(
     private readonly ViewExecutableFactoryWrapper $viewExecutableFactory,
     private readonly EntityTypeManagerInterface $entityManager) {
-
     $this->data['views'] = [];
   }
 
@@ -72,7 +70,7 @@ class ViewsDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 

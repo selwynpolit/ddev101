@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\tracer\DependencyInjection;
 
@@ -41,7 +41,7 @@ class TraceableContainer extends Container {
    */
   public function get($id, $invalid_behavior = ContainerInterface::EXCEPTION_ON_INVALID_REFERENCE): ?object {
     if (
-      !$this->tracerFactory &&
+      $this->tracerFactory != NULL &&
       $this->has('tracer.tracer_factory') &&
       !array_key_exists('tracer.tracer_factory', $this->loading)
     ) {
@@ -55,15 +55,15 @@ class TraceableContainer extends Container {
 
     Timer::start($id);
 
-    if ($this->tracer !== NULL) {
-      $span = $this->tracer->start('service', $id);
-    }
+    $span = $this->tracer?->start('service', $id);
 
     $service = parent::get($id, $invalid_behavior);
 
     $this->tracedData[$id] = Timer::stop($id);
 
-    $this->tracer?->stop($span);
+    if ($span !== NULL) {
+      $this->tracer?->stop($span);
+    }
 
     return $service;
   }

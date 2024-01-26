@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -11,7 +11,6 @@ use Drupal\webprofiler\Entity\EntityDecorator;
 use Drupal\webprofiler\Entity\EntityTypeManagerWrapper;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects blocks data.
@@ -48,11 +47,11 @@ class BlocksDataCollector extends DataCollector implements HasPanelInterface {
     $loaded = $this->entityManager->getLoaded('config', 'block');
     $rendered = $this->entityManager->getRendered('block');
 
-    if ($loaded) {
+    if ($loaded != NULL) {
       $this->data['blocks']['loaded'] = $this->getBlocksData($loaded, $storage);
     }
 
-    if ($rendered) {
+    if ($rendered != NULL) {
       $this->data['blocks']['rendered'] = $this->getBlocksData($rendered, $storage);
     }
   }
@@ -60,7 +59,7 @@ class BlocksDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -143,24 +142,27 @@ class BlocksDataCollector extends DataCollector implements HasPanelInterface {
 
     /** @var \Drupal\block\BlockInterface $block */
     foreach ($decorator->getEntities() as $block) {
-      /** @var \Drupal\block\Entity\Block $entity */
-      if (NULL !== $block && $entity = $storage->load($block->get('id'))) {
+      if ($block != NULL) {
+        /** @var \Drupal\block\Entity\Block|null $entity */
+        $entity = $storage->load($block->get('id'));
 
-        $route = '';
-        if ($entity->hasLinkTemplate('edit-form')) {
-          $route = $entity->toUrl('edit-form')->toString();
+        if ($entity != NULL) {
+          $route = '';
+          if ($entity->hasLinkTemplate('edit-form')) {
+            $route = $entity->toUrl('edit-form')->toString();
+          }
+
+          $id = $block->get('id');
+          $blocks[$id] = [
+            'id' => $id,
+            'region' => $block->getRegion(),
+            'status' => $block->get('status'),
+            'theme' => $block->getTheme(),
+            'plugin' => $block->get('plugin'),
+            'settings' => $block->get('settings'),
+            'route' => $route,
+          ];
         }
-
-        $id = $block->get('id');
-        $blocks[$id] = [
-          'id' => $id,
-          'region' => $block->getRegion(),
-          'status' => $block->get('status'),
-          'theme' => $block->getTheme(),
-          'plugin' => $block->get('plugin'),
-          'settings' => $block->get('settings'),
-          'route' => $route,
-        ];
       }
     }
 

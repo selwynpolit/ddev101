@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -8,7 +8,6 @@ use Drupal\Core\Config\ImmutableConfig;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects config data.
@@ -33,7 +32,7 @@ class ConfigDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -45,7 +44,7 @@ class ConfigDataCollector extends DataCollector implements HasPanelInterface {
    * @param \Drupal\Core\Config\ImmutableConfig $config
    *   The config object.
    */
-  public function addConfig(string $name, ImmutableConfig $config) {
+  public function addConfig(string $name, ImmutableConfig $config): void {
     $data = $config->get();
     unset($data['_core']);
 

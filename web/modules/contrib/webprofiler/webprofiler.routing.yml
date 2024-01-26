@@ -55,7 +55,7 @@ webprofiler.frontend.navigation:
     parameters:
       profile:
         type: 'webprofiler:token'
-  methods:  [POST]
+  methods: [POST]
   requirements:
     _permission: 'view webprofiler toolbar'
 
@@ -68,6 +68,6 @@ webprofiler.frontend.cwv:
     parameters:
       profile:
         type: 'webprofiler:token'
-  methods:  [POST]
+  methods: [POST]
   requirements:
     _permission: 'view webprofiler toolbar'

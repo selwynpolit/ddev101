@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types = 1);
+
 namespace Drupal\webprofiler\DataCollector;
 
 use Drupal\Core\Authentication\AuthenticationCollectorInterface;
@@ -9,7 +11,6 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects users data.
@@ -48,7 +49,7 @@ class UserDataCollector extends DataCollector {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -63,7 +64,7 @@ class UserDataCollector extends DataCollector {
     $storage = $this->entityManager->getStorage('user_role');
     foreach ($this->currentUser->getRoles() as $role) {
       $entity = $storage->load($role);
-      if ($entity) {
+      if ($entity != NULL) {
         $this->data['roles'][] = $entity->label();
       }
     }

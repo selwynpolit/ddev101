@@ -1,13 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects cache data.
@@ -45,7 +44,7 @@ class CacheDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -57,17 +56,25 @@ class CacheDataCollector extends DataCollector implements HasPanelInterface {
    * @param object $cache
    *   The cache object.
    */
-  public function registerCacheHit(string $bin, object $cache) {
+  public function registerCacheHit(string $bin, object $cache): void {
     $current = $this->data['cache'][$bin][$cache->cid] ?? NULL;
 
     if (!$current) {
-      $current = clone($cache);
-      $current->{CacheDataCollector::WEBPROFILER_CACHE_HIT} = 0;
-      $current->{CacheDataCollector::WEBPROFILER_CACHE_MISS} = 0;
+      $current = [
+        'cache' => [
+          'cid' => $cache->cid,
+          'tags' => $cache->tags,
+        ],
+        'count' => [
+          CacheDataCollector::WEBPROFILER_CACHE_HIT => 0,
+          CacheDataCollector::WEBPROFILER_CACHE_MISS => 0,
+        ],
+      ];
+
       $this->data['cache'][$bin][$cache->cid] = $current;
     }
 
-    $current->{CacheDataCollector::WEBPROFILER_CACHE_HIT}++;
+    $this->data['cache'][$bin][$cache->cid]['count'][CacheDataCollector::WEBPROFILER_CACHE_HIT]++;
     $this->data['total'][CacheDataCollector::WEBPROFILER_CACHE_HIT]++;
   }
 
@@ -79,18 +86,25 @@ class CacheDataCollector extends DataCollector implements HasPanelInterface {
    * @param string $cid
    *   The cache cid.
    */
-  public function registerCacheMiss(string $bin, string $cid) {
+  public function registerCacheMiss(string $bin, string $cid): void {
     $current = $this->data['cache'][$bin][$cid] ?? NULL;
 
     if (!$current) {
-      $current = new \StdClass();
-      $current->cid = $cid;
-      $current->{CacheDataCollector::WEBPROFILER_CACHE_HIT} = 0;
-      $current->{CacheDataCollector::WEBPROFILER_CACHE_MISS} = 0;
+      $current = [
+        'cache' => [
+          'cid' => $cid,
+          'tags' => [],
+        ],
+        'count' => [
+          CacheDataCollector::WEBPROFILER_CACHE_HIT => 0,
+          CacheDataCollector::WEBPROFILER_CACHE_MISS => 0,
+        ],
+      ];
+
       $this->data['cache'][$bin][$cid] = $current;
     }
 
-    $current->{CacheDataCollector::WEBPROFILER_CACHE_MISS}++;
+    $this->data['cache'][$bin][$cid]['count'][CacheDataCollector::WEBPROFILER_CACHE_MISS]++;
     $this->data['total'][CacheDataCollector::WEBPROFILER_CACHE_MISS]++;
   }
 
@@ -141,7 +155,7 @@ class CacheDataCollector extends DataCollector implements HasPanelInterface {
     foreach ($this->data['cache'] as $bin => $caches) {
       $hits[$bin] = 0;
       foreach ($caches as $cache) {
-        $hits[$bin] += $cache->{$type};
+        $hits[$bin] += $cache['count'][$type];
       }
     }
 
@@ -206,17 +220,17 @@ class CacheDataCollector extends DataCollector implements HasPanelInterface {
           $this->t('Miss'),
           $this->t('Tags'),
         ],
-        '#rows' => array_map(function (\stdClass $cache) {
+        '#rows' => array_map(function (array $cache) {
           return [
-            $cache->cid,
-            $cache->{CacheDataCollector::WEBPROFILER_CACHE_HIT},
-            $cache->{CacheDataCollector::WEBPROFILER_CACHE_MISS},
+            $cache['cache']['cid'],
+            $cache['count'][CacheDataCollector::WEBPROFILER_CACHE_HIT],
+            $cache['count'][CacheDataCollector::WEBPROFILER_CACHE_MISS],
             [
               'data' => [
                 '#type' => 'inline_template',
                 '#template' => '{{ data|raw }}',
                 '#context' => [
-                  'data' => !empty($cache->tags) ? $this->dumpData($this->cloneVar($cache->tags)) : '',
+                  'data' => count($cache['cache']['tags']) > 0 ? $this->dumpData($this->cloneVar($cache['cache']['tags'])) : '',
                 ],
               ],
             ],

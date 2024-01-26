@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -8,7 +8,6 @@ use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webprofiler\Http\HttpClientMiddleware;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 
 /**
  * Collects data about http calls during request.
@@ -38,7 +37,7 @@ class HttpDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * Reset the collected data.
    */
-  public function reset() {
+  public function reset(): void {
     $this->data = [];
   }
 
@@ -110,7 +109,7 @@ class HttpDataCollector extends DataCollector implements HasPanelInterface {
         ],
       ];
 
-      if ($response) {
+      if ($response != NULL) {
         $failureData['response'] = [
           'phrase' => $response->getReasonPhrase(),
           'status' => $response->getStatusCode(),

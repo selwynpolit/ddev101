@@ -1,11 +1,12 @@
 <?php
 
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace Drupal\tracer\EventDispatcher;
 
 use Drupal\Component\EventDispatcher\ContainerAwareEventDispatcher;
 use Drupal\tracer\TracerInterface;
+use Psr\EventDispatcher\StoppableEventInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
 
@@ -95,7 +96,7 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
 
           $this->addCalledListener($definition, $event_name, $priority);
 
-          if ($event->isPropagationStopped()) {
+          if ($event instanceof StoppableEventInterface && $event->isPropagationStopped()) {
             return $event;
           }
         }
@@ -125,9 +126,9 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
    * Set the Tracer instance.
    *
    * @param \Drupal\tracer\TracerInterface $tracer
-   *   The Tracer instance.
+   *   The Tracer's instance.
    */
-  public function setTracer(TracerInterface $tracer) {
+  public function setTracer(TracerInterface $tracer): void {
     $this->tracer = $tracer;
   }
 
@@ -135,11 +136,11 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
    * Called before dispatching the event.
    *
    * @param string $eventName
-   *   The event name.
+   *   The event's name.
    * @param object $event
-   *   The event object.
+   *   The event's object.
    */
-  protected function beforeDispatch(string $eventName, object $event) {
+  protected function beforeDispatch(string $eventName, object $event): void {
     switch ($eventName) {
       case KernelEvents::VIEW:
       case KernelEvents::RESPONSE:
@@ -155,11 +156,11 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
    * Called after dispatching the event.
    *
    * @param string $eventName
-   *   The event name.
+   *   The event's name.
    * @param object $event
-   *   The event object.
+   *   The event's object.
    */
-  protected function afterDispatch(string $eventName, object $event) {
+  protected function afterDispatch(string $eventName, object $event): void {
     if ($eventName == KernelEvents::CONTROLLER_ARGUMENTS) {
       $this->controllerSpan = $this->tracer->start('controller', 'todo');
     }
@@ -169,13 +170,13 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
    * Add listener to the called listeners array.
    *
    * @param array $definition
-   *   The event definition.
+   *   The event's definition.
    * @param string $event_name
-   *   The event name.
+   *   The event's name.
    * @param int $priority
-   *   The event priority.
+   *   The event's priority.
    */
-  private function addCalledListener(array $definition, string $event_name, int $priority) {
+  private function addCalledListener(array $definition, string $event_name, int $priority): void {
     if ($this->isClosure($definition['callable'])) {
       $this->calledListeners[$event_name][$priority][] = [
         'class' => 'Closure',
@@ -183,8 +184,9 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
       ];
     }
     else {
+      $class = is_string($definition['callable'][0]) ? $definition['callable'][0] : get_class($definition['callable'][0]);
       $this->calledListeners[$event_name][$priority][] = [
-        'class' => get_class($definition['callable'][0]),
+        'class' => $class,
         'method' => $definition['callable'][1],
       ];
     }
@@ -204,7 +206,9 @@ class TraceableEventDispatcher extends ContainerAwareEventDispatcher implements 
           }
         }
         else {
-          if (get_class($listener['callable'][0]) == get_class($definition['callable'][0]) && $listener['callable'][1] == $definition['callable'][1]) {
+          $listener_class = is_string($listener['callable'][0]) ? $listener['callable'][0] : get_class($listener['callable'][0]);
+          $definition_class = is_string($definition['callable'][0]) ? $definition['callable'][0] : get_class($definition['callable'][0]);
+          if ($listener_class == $definition_class && $listener['callable'][1] == $definition['callable'][1]) {
             unset($this->notCalledListeners[$event_name][$priority][$key]);
           }
         }
