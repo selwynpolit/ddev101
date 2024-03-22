@@ -1,0 +1,6 @@
+name: 'Event Subscriber Example'
+type: module
+description: 'Handles custom functionality for user login events.'
+core_version_requirement: ^8 || ^9 || ^10
+package: Custom
+
