@@ -23,6 +23,7 @@
         "drupal/image_effects": "^3.4",
         "drupal/module_filter": "^4.0",
         "drupal/openai": "^1.0@alpha",
+        "drupal/views_jump_menu": "^1.0@RC",
         "drush/drush": "^12.1"
     },
     "conflict": {
