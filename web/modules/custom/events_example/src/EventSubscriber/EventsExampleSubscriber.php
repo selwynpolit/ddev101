@@ -1,9 +1,9 @@
-<?php declare(strict_types = 1);
+<?php
 
-namespace Drupal\mymodule\EventSubscriber;
+declare(strict_types=1);
 
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\Core\Logger\LoggerChannelInterface;
+namespace Drupal\events_example\EventSubscriber;
+
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -12,25 +12,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * @todo Add description for this subscriber.
  */
-final class MymoduleSubscriber implements EventSubscriberInterface {
-
-  protected LoggerChannelInterface $logger;
-
-  /**
-   * Constructs a MymoduleSubscriber object.
-   */
-  public function __construct(
-    private readonly LoggerChannelFactoryInterface $loggerFactory,
-  ) {
-    $this->logger = $this->loggerFactory->get('mymodule');
-  }
+final class EventsExampleSubscriber implements EventSubscriberInterface {
 
   /**
    * Kernel request event handler.
    */
   public function onKernelRequest(RequestEvent $event): void {
     // @todo Place your code here.
-    $x = $event;
   }
 
   /**

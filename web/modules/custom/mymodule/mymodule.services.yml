@@ -1,6 +1,7 @@
 services:
-  mymodule.event_subscriber:
-    class: Drupal\mymodule\EventSubscriber\MymoduleSubscriber
-    arguments: ['@logger.factory']
+  mymodule.route_finished_subscriber:
+    class: Drupal\mymodule\EventSubscriber\RouteFinishedSubscriber
+    arguments:
+      - '@state'
     tags:
       - { name: event_subscriber }
