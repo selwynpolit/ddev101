@@ -4,6 +4,7 @@ namespace Drupal\cron_example\Form;
 
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\CronInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -57,6 +58,8 @@ class CronExampleForm extends ConfigFormBase {
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
+   * @param \Drupal\Core\Config\TypedConfigManagerInterface $typed_config_manager
+   *   The typed config manager.
    * @param \Drupal\Core\Session\AccountInterface $current_user
    *   The current user.
    * @param \Drupal\Core\CronInterface $cron
@@ -68,8 +71,8 @@ class CronExampleForm extends ConfigFormBase {
    * @param \Drupal\Component\Datetime\TimeInterface $time
    *   The time service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, AccountInterface $current_user, CronInterface $cron, QueueFactory $queue, StateInterface $state, TimeInterface $time) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typed_config_manager, AccountInterface $current_user, CronInterface $cron, QueueFactory $queue, StateInterface $state, TimeInterface $time) {
+    parent::__construct($config_factory, $typed_config_manager);
     $this->currentUser = $current_user;
     $this->cron = $cron;
     $this->queue = $queue;
@@ -83,6 +86,7 @@ class CronExampleForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     $form = new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('current_user'),
       $container->get('cron'),
       $container->get('queue'),
@@ -141,7 +145,7 @@ class CronExampleForm extends ConfigFormBase {
         '#default_value' => FALSE,
       ];
       $form['cron_run']['cron_trigger']['actions'] = ['#type' => 'actions'];
-      $form['cron_run']['cron_trigger']['actions']['sumbit'] = [
+      $form['cron_run']['cron_trigger']['actions']['submit'] = [
         '#type' => 'submit',
         '#value' => $this->t('Run cron now'),
         '#submit' => [[$this, 'cronRun']],
@@ -235,7 +239,7 @@ class CronExampleForm extends ConfigFormBase {
     $queue_name = $form['cron_queue_setup']['queue'][$values['queue']]['#title'];
     $num_items = $form_state->getValue('num_items');
     // Queues are defined by a QueueWorker Plugin which are selected by their
-    // id attritbute.
+    // ID.
     // @see \Drupal\cron_example\Plugin\QueueWorker\ReportWorkerOne
     $queue = $this->queue->get($values['queue']);
 
@@ -262,7 +266,7 @@ class CronExampleForm extends ConfigFormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Update the interval as stored in configuration. This will be read when
     // this modules hook_cron function fires and will be used to ensure that
-    // action is taken only after the appropiate time has elapsed.
+    // action is taken only after the appropriate time has elapsed.
     $this->config('cron_example.settings')
       ->set('interval', $form_state->getValue('cron_example_interval'))
       ->save();

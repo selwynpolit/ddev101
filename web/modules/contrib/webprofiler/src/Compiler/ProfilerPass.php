@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\webprofiler\Compiler;
 
@@ -19,7 +19,7 @@ class ProfilerPass implements CompilerPassInterface {
   /**
    * {@inheritDoc}
    */
-  public function process(ContainerBuilder $container) {
+  public function process(ContainerBuilder $container): void {
     if (FALSE === $container->hasDefinition('webprofiler.profiler')) {
       return;
     }
@@ -32,21 +32,21 @@ class ProfilerPass implements CompilerPassInterface {
       $priority = $attributes[0]['priority'] ?? 0;
       $template = NULL;
 
-      $collectorClass = $container->findDefinition($id)->getClass();
-      $isTemplateAware = is_subclass_of($collectorClass, TemplateAwareDataCollectorInterface::class);
-      if (isset($attributes[0]['template']) || $isTemplateAware) {
-        $idForTemplate = $attributes[0]['id'] ?? $collectorClass;
-        if (!$idForTemplate) {
-          throw new InvalidArgumentException(sprintf('Data collector service "%s" must have an id attribute in order to specify a template.', $id));
+      $collector_class = $container->findDefinition($id)->getClass();
+      $is_template_aware = \is_subclass_of($collector_class, TemplateAwareDataCollectorInterface::class);
+      if (isset($attributes[0]['template']) || $is_template_aware) {
+        $id_for_template = $attributes[0]['id'] ?? $collector_class;
+        if (!$id_for_template) {
+          throw new InvalidArgumentException(\sprintf('Data collector service "%s" must have an id attribute in order to specify a template.', $id));
         }
         if (!isset($attributes[0]['label'])) {
-          throw new InvalidArgumentException(sprintf('Data collector service "%s" must have a label attribute', $id));
+          throw new InvalidArgumentException(\sprintf('Data collector service "%s" must have a label attribute', $id));
         }
         $template =
           [
-            $idForTemplate,
-            $attributes[0]['template'] ?? $collectorClass::getTemplate(),
-            $attributes[0]['label'] ?? "",
+            $id_for_template,
+            $attributes[0]['template'] ?? $collector_class::getTemplate(),
+            $attributes[0]['label'] ?? '',
           ];
       }
 
@@ -62,7 +62,13 @@ class ProfilerPass implements CompilerPassInterface {
     $container->setParameter('webprofiler.templates', $templates);
 
     // Set a parameter with the storage dns.
-    $path = 'file:' . DRUPAL_ROOT . '/' . PublicStream::basePath() . '/profiler';
+    if ($container->hasParameter('webprofiler.file_profiler_storage_dns')) {
+      $path = $container->getParameter('webprofiler.file_profiler_storage_dns');
+    }
+    else {
+      // Fall back to the public:// directory.
+      $path = 'file:' . DRUPAL_ROOT . '/' . PublicStream::basePath() . '/profiler';
+    }
     $container->setParameter('webprofiler.file_profiler_storage_dns', $path);
   }
 

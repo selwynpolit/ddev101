@@ -6,6 +6,10 @@ parameters:
       -
         message: "#Usage of deprecated trait Symfony\\\\Component\\\\DependencyInjection\\\\ContainerAwareTrait#"
         reportUnmatched: false
+      -
+        message: "#Call to an undefined method Drupal\\\\Core\\\\Render\\\\RendererInterface::renderInIsolation\\(\\)#"
+        path: src/DataCollector/DevelDataCollector.php
+        reportUnmatched: false
     level: 5
     paths:
       - src
@@ -20,10 +24,4 @@ parameters:
     excludePaths:
       - templates/Error/*
       - src/Render/TraceableBigPipe.php
-    scanFiles:
-      - %currentWorkingDirectory%/web/core/includes/theme.inc
-    scanDirectories:
-      - %currentWorkingDirectory%/web/modules/contrib/devel
-      - %currentWorkingDirectory%/web/modules/contrib/tracer
-      - %currentWorkingDirectory%/web/modules/contrib/monolog
-      - %currentWorkingDirectory%/web/core
+      - tests

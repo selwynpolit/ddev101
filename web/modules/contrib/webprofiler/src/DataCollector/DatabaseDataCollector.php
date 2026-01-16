@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -33,7 +33,7 @@ class DatabaseDataCollector extends DataCollector implements HasPanelInterface {
   /**
    * {@inheritdoc}
    */
-  public function collect(Request $request, Response $response, \Throwable $exception = NULL): void {
+  public function collect(Request $request, Response $response, ?\Throwable $exception = NULL): void {
     $options = $this->database->getConnectionOptions();
 
     // Remove password for security.
@@ -103,7 +103,7 @@ class DatabaseDataCollector extends DataCollector implements HasPanelInterface {
    *   The number of execute queries.
    */
   public function getQueryCount(): int {
-    return count($this->data['queries']);
+    return \count($this->data['queries']);
   }
 
   /**
@@ -122,7 +122,7 @@ class DatabaseDataCollector extends DataCollector implements HasPanelInterface {
 
     $queries = $this->data['queries'];
     if ('duration' === $query_sort) {
-      usort($queries, function (array $a, array $b): int {
+      \usort($queries, static function (array $a, array $b): int {
         return $a['time'] <=> $b['time'];
       });
     }
@@ -154,6 +154,16 @@ class DatabaseDataCollector extends DataCollector implements HasPanelInterface {
    */
   public function getQueryHighlightThreshold(): int {
     return $this->configFactory->get('webprofiler.settings')->get('query_highlight');
+  }
+
+  /**
+   * Returns the number of queries after which detailed output is disabled.
+   *
+   * @return int
+   *   The number of queries after which detailed output is disabled.
+   */
+  public function getQueryDetailedOutputThreshold(): int {
+    return $this->configFactory->get('webprofiler.settings')->get('query_detailed_output_threshold');
   }
 
 }

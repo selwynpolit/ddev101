@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\webprofiler\EventListener;
 
@@ -11,6 +11,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\webprofiler\Csp\ContentSecurityPolicyHandler;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DumpDataCollector;
 use Symfony\Component\HttpKernel\Event\ResponseEvent;
@@ -44,6 +45,8 @@ class ToolbarListener implements EventSubscriberInterface {
    *   The dump data collector.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config
    *   The config factory service.
+   * @param \Symfony\Component\HttpFoundation\RequestMatcherInterface $matcher
+   *   The request matcher service.
    */
   public function __construct(
     protected readonly RendererInterface $renderer,
@@ -51,7 +54,8 @@ class ToolbarListener implements EventSubscriberInterface {
     protected readonly UrlGeneratorInterface $urlGenerator,
     protected readonly ContentSecurityPolicyHandler $cspHandler,
     protected readonly DumpDataCollector $dumpDataCollector,
-    ConfigFactoryInterface $config
+    ConfigFactoryInterface $config,
+    protected readonly RequestMatcherInterface $matcher,
   ) {
     $this->config = $config->get('webprofiler.settings');
   }
@@ -59,7 +63,7 @@ class ToolbarListener implements EventSubscriberInterface {
   /**
    * {@inheritDoc}
    */
-  public static function getSubscribedEvents() {
+  public static function getSubscribedEvents(): array {
     return [
       KernelEvents::RESPONSE => ['onKernelResponse', -128],
     ];
@@ -83,7 +87,7 @@ class ToolbarListener implements EventSubscriberInterface {
         );
       }
       catch (\Exception $e) {
-        $response->headers->set('X-Debug-Error', $e::class . ': ' . preg_replace('/\s+/', ' ', $e->getMessage()));
+        $response->headers->set('X-Debug-Error', $e::class . ': ' . \preg_replace('/\s+/', ' ', $e->getMessage()));
       }
     }
 
@@ -116,16 +120,27 @@ class ToolbarListener implements EventSubscriberInterface {
 
     if (!$response->headers->has('X-Debug-Token')
       || $response->isRedirection()
-      || ($response->headers->has('Content-Type') && !str_contains($response->headers->get('Content-Type'), 'html'))
+      || ($response->headers->has('Content-Type') && !\str_contains($response->headers->get('Content-Type'), 'html'))
       || 'html' !== $request->getRequestFormat()
-      || FALSE !== stripos($response->headers->get('Content-Disposition', ''), 'attachment;')
+      || FALSE !== \stripos($response->headers->get('Content-Disposition', ''), 'attachment;')
     ) {
       return;
     }
 
-    if ($this->currentUser->hasPermission('view webprofiler toolbar')) {
+    if ($this->shouldInjectToolbar($request)) {
       $this->injectToolbar($response, $request, $nonces);
     }
+  }
+
+  /**
+   * Weather the toolbar should be injected in the given Request.
+   *
+   * @return bool
+   *   TRUE if the toolbar should be injected, FALSE otherwise.
+   */
+  private function shouldInjectToolbar(Request $request): bool {
+    return $this->currentUser->hasPermission('view webprofiler toolbar') &&
+      $this->matcher->matches($request);
   }
 
   /**
@@ -144,7 +159,7 @@ class ToolbarListener implements EventSubscriberInterface {
       return;
     }
 
-    $pos = strripos($content, '</body>');
+    $pos = \strripos($content, '</body>');
 
     if (FALSE !== $pos) {
       $toolbarJs = [
@@ -155,8 +170,8 @@ class ToolbarListener implements EventSubscriberInterface {
         '#csp_style_nonce' => $nonces['csp_style_nonce'] ?? NULL,
       ];
 
-      $toolbar = "\n" . str_replace("\n", '', (string) $this->renderer->renderRoot($toolbarJs)) . "\n";
-      $content = substr($content, 0, $pos) . $toolbar . substr($content, $pos);
+      $toolbar = "\n" . \str_replace("\n", '', (string) $this->renderer->renderRoot($toolbarJs)) . "\n";
+      $content = \substr($content, 0, $pos) . $toolbar . \substr($content, $pos);
       $response->setContent($content);
     }
   }

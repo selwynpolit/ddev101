@@ -12,6 +12,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\language\ConfigurableLanguageInterface;
 use Drupal\system\Entity\Menu;
+use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\block\Entity\Block;
 
 /**
@@ -91,6 +92,10 @@ function block_page_top(array &$page_top) {
  * @see block_modules_installed()
  */
 function block_themes_installed($theme_list) {
+  // Do not create blocks during config sync.
+  if (\Drupal::service('config.installer')->isSyncing()) {
+    return;
+  }
   // Disable this functionality prior to install profile installation because
   // block configuration is often optional or provided by the install profile
   // itself. block_theme_initialize() will be called when the install profile is
@@ -150,7 +155,12 @@ function block_theme_initialize($theme) {
  *
  * @see block_themes_installed()
  */
-function block_modules_installed($modules) {
+function block_modules_installed($modules, bool $is_syncing) {
+  // Do not create blocks during config sync.
+  if ($is_syncing) {
+    return;
+  }
+
   // block_themes_installed() does not call block_theme_initialize() during site
   // installation because block configuration can be optional or provided by the
   // profile. Now, when the profile is installed, this configuration exists,
@@ -315,4 +325,23 @@ function block_configurable_language_delete(ConfigurableLanguageInterface $langu
       $block->save();
     }
   }
+}
+
+/**
+ * Implements hook_block_build_BASE_BLOCK_ID_alter().
+ */
+function block_block_build_local_actions_block_alter(array &$build, BlockPluginInterface $block) {
+  $build['#lazy_builder_preview'] = [
+    '#type' => 'container',
+    '#attributes' => [
+      'class' => ['invisible'],
+    ],
+    'actions' => [
+      '#theme' => 'menu_local_action',
+      '#link' => [
+        'title' => t('Add'),
+        'url' => Url::fromUserInput('#'),
+      ],
+    ],
+  ];
 }

@@ -2,9 +2,9 @@
 
 namespace Drupal\Tests\phpunit_example\Unit;
 
-use Drupal\Tests\UnitTestCase;
-use Drupal\phpunit_example\DisplayManager;
 use Drupal\phpunit_example\DisplayInfoInterface;
+use Drupal\phpunit_example\DisplayManager;
+use Drupal\Tests\UnitTestCase;
 
 /**
  * DisplayManager unit test with doubles.
@@ -30,8 +30,7 @@ class DisplayManagerTest extends UnitTestCase {
     // Get a mock object belonging to our desired interface.
     // Note that we have to fully qualify the domain name
     // for PHPUnit's benefit.
-    $mock = $this->getMockBuilder(DisplayInfoInterface::class)
-      ->getMockForAbstractClass();
+    $mock = $this->createMock(DisplayInfoInterface::class);
     // Here we're illustrating that the mock object belongs to
     // our interface.
     $this->assertTrue($mock instanceof DisplayInfoInterface);
@@ -40,7 +39,7 @@ class DisplayManagerTest extends UnitTestCase {
     // the method is called.
     $mock->expects($this->any())
       ->method('getDisplayName')
-      ->will($this->returnValue('the display name'));
+      ->willReturn('the display name');
 
     // Create a DisplayManager, the class we're actually testing here.
     $dm = new DisplayManager();
@@ -52,7 +51,7 @@ class DisplayManagerTest extends UnitTestCase {
     $this->assertSame($mock, $dm->item('the display name'));
     // Assert that the DisplayManager can't find an info object
     // that it shouldn't have.
-    $this->assertNull($dm->item('nonexistant'));
+    $this->assertNull($dm->item('nonexistent'));
   }
 
 }

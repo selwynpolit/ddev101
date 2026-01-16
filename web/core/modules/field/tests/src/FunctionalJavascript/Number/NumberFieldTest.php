@@ -46,11 +46,11 @@ class NumberFieldTest extends WebDriverTestBase {
   /**
    * Tests default formatter behavior.
    */
-  public function testNumberFormatter() {
+  public function testNumberFormatter(): void {
     $type = $this->randomMachineName();
     $float_field = $this->randomMachineName();
     $integer_field = $this->randomMachineName();
-    $thousand_separators = ['', '.', ',', ' ', chr(8201), "'"];
+    $thousand_separators = ['', '.', ',', ' ', mb_chr(8201, 'UTF-8'), "'"];
     $decimal_separators = ['.', ','];
     $prefix = $this->randomMachineName();
     $suffix = $this->randomMachineName();

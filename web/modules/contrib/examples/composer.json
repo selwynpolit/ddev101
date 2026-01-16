@@ -8,7 +8,12 @@
         "documentation": "https://api.drupal.org/api/examples",
         "source": "https://git.drupalcode.org/project/examples"
     },
+    "require": {
+        "php": "^8.1",
+        "drupal/hal": "^2.0"
+    },
     "require-dev": {
+        "drupal/tour": "^2.0",
         "phpspec/prophecy-phpunit": "*"
     },
     "suggest": {

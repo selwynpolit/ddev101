@@ -22,6 +22,7 @@
         "drupal/core-recommended": "^10.1",
         "drupal/examples": "^4.0",
         "drupal/image_effects": "^3.4",
+        "drupal/imce": "^3.0",
         "drupal/module_filter": "^4.0",
         "drupal/openai": "^1.0@alpha",
         "drupal/views_jump_menu": "^1.0@RC",
@@ -35,11 +36,12 @@
     "config": {
         "allow-plugins": {
             "composer/installers": true,
+            "dealerdirect/phpcodesniffer-composer-installer": true,
             "drupal/core-composer-scaffold": true,
             "drupal/core-project-message": true,
+            "php-http/discovery": true,
             "phpstan/extension-installer": true,
-            "dealerdirect/phpcodesniffer-composer-installer": true,
-            "php-http/discovery": true
+            "tbachert/spi": true
         },
         "sort-packages": true
     },
@@ -102,7 +104,7 @@
     },
     "require-dev": {
         "drupal/coder": "^8.3",
-        "drupal/core-dev": "^10.1",
+        "drupal/core-dev": "^10.6",
         "drupal/devel": "^5.1",
         "drupal/webprofiler": "^10.1"
     }

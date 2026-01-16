@@ -2,10 +2,11 @@
 
 namespace Drupal\render_example\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Config\TypedConfigManagerInterface;
 use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -32,8 +33,8 @@ class RenderExampleDemoForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
-  public function __construct(ConfigFactoryInterface $config_factory, ModuleHandlerInterface $module_handler) {
-    parent::__construct($config_factory);
+  public function __construct(ConfigFactoryInterface $config_factory, TypedConfigManagerInterface $typed_config_manager, ModuleHandlerInterface $module_handler) {
+    parent::__construct($config_factory, $typed_config_manager);
     $this->moduleHandler = $module_handler;
   }
 
@@ -43,6 +44,7 @@ class RenderExampleDemoForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
+      $container->get('config.typed'),
       $container->get('module_handler')
     );
   }
@@ -150,9 +152,9 @@ class RenderExampleDemoForm extends ConfigFormBase {
         // Apply the 'draggable' class to each row in the table that you want to
         // be made draggable.
         '#attributes' => ['class' => ['draggable']],
-        // The first two columsn are render arrays that display a string of
+        // The first two column are render arrays which display a string of
         // text.
-        'name' => ['#plain_text' => $this->t('Amber')],
+        'name' => ['#plain_text' => $this->t('Teal')],
         'color' => ['#plain_text' => $this->t('teal')],
         // The third column is a #weight form field.
         'weight' => [
@@ -172,7 +174,7 @@ class RenderExampleDemoForm extends ConfigFormBase {
       // table to drag around.
       [
         '#attributes' => ['class' => ['draggable']],
-        'name' => ['#plain_text' => $this->t('Addi')],
+        'name' => ['#plain_text' => $this->t('Amber')],
         'color' => ['#plain_text' => $this->t('green')],
         'weight' => [
           '#type' => 'weight',
@@ -229,14 +231,14 @@ class RenderExampleDemoForm extends ConfigFormBase {
       // render array. And each column in the row as a sub element of the row
       // array.
       [
-        'name' => ['#plain_text' => $this->t('Amber')],
+        'name' => ['#plain_text' => $this->t('Teal')],
         'color' => ['#plain_text' => $this->t('teal')],
       ],
       // The rest of this array is additional rows so there is some data in the
       // table.
       [
         '#attributes' => ['class' => ['draggable']],
-        'name' => ['#plain_text' => $this->t('Addi')],
+        'name' => ['#plain_text' => $this->t('Amber')],
         'color' => ['#plain_text' => $this->t('green')],
       ],
       [

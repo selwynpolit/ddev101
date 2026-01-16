@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -53,11 +53,26 @@ abstract class DataCollector implements DataCollectorInterface {
    */
   protected function getCasters(): array {
     return [
-      '*' => function ($v, array $a, Stub $s, $isNested) {
+      '*' => static function ($v, array $a, Stub $s, $isNested) {
         if (!$v instanceof Stub) {
+          $b = $a;
           foreach ($a as $k => $v2) {
-            if (\is_object($v2) && !$v2 instanceof \DateTimeInterface && !$v2 instanceof Stub) {
-              $a[$k] = new CutStub($v2);
+            if (!\is_object(
+                $v2,
+              ) || $v2 instanceof \DateTimeInterface || $v2 instanceof Stub) {
+              continue;
+            }
+
+            try {
+              $a[$k] = $s = new CutStub($v2);
+
+              if ($b[$k] === $s) {
+                // We've hit a non-typed reference.
+                $a[$k] = $v2;
+              }
+            }
+            catch (\TypeError $e) {
+              // We've hit a typed reference.
             }
           }
         }

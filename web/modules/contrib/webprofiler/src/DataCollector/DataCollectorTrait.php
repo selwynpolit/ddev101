@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types = 1);
+declare(strict_types=1);
 
 namespace Drupal\webprofiler\DataCollector;
 
@@ -23,7 +23,7 @@ trait DataCollectorTrait {
    *   Array of information about a method of a class.
    */
   public function getMethodData($class, string $method): ?MethodData {
-    $class = is_object($class) ? get_class($class) : $class;
+    $class = \is_object($class) ? \get_class($class) : $class;
     $data = NULL;
 
     try {
@@ -55,17 +55,17 @@ trait DataCollectorTrait {
   private function getCallableContext(callable $callable): string {
     switch (TRUE) {
       case \is_string($callable) && \strpos($callable, '::'):
-        $parts = explode('::', $callable);
-        return sprintf('class: %s, static method: %s', $parts[0], $parts[1]);
+        $parts = \explode('::', $callable);
+        return \sprintf('class: %s, static method: %s', $parts[0], $parts[1]);
 
       case \is_string($callable):
-        return sprintf('function: %s', $callable);
+        return \sprintf('function: %s', $callable);
 
       case \is_array($callable) && \is_object($callable[0]):
-        return sprintf('class: %s, method: %s', \get_class($callable[0]), $callable[1]);
+        return \sprintf('class: %s, method: %s', \get_class($callable[0]), $callable[1]);
 
       case \is_array($callable):
-        return sprintf('class: %s, static method: %s', $callable[0], $callable[1]);
+        return \sprintf('class: %s, static method: %s', $callable[0], $callable[1]);
 
       case $callable instanceof \Closure:
         try {
@@ -77,7 +77,7 @@ trait DataCollectorTrait {
           return 'closure';
         }
 
-        return sprintf(
+        return \sprintf(
             'closure this: %s, closure scope: %s, static variables: %s',
             $closureThis ? \get_class($closureThis) : $reflectedFunction->name,
             $closureClass != NULL ? $closureClass->getName() : $reflectedFunction->name,
@@ -85,11 +85,46 @@ trait DataCollectorTrait {
           );
 
       case \is_object($callable):
-        return sprintf('invokable: %s', \get_class($callable));
+        return \sprintf('invokable: %s', \get_class($callable));
 
       default:
         return 'unknown';
     }
+  }
+
+  /**
+   * Retrieve the context of a Twig callable for debugging purposes.
+   *
+   * Before the introduction of runtime loaders, those callable parameters
+   * effectively did have to match the PHP callable type. When the runtime
+   * loaders were introduced to allow lazy loading the backing
+   * implementation of a function/filter/whatever, that's where the
+   * pseudo-callable array syntax became a thing. So the result still has
+   * to be callable once the runtime is resolved, but for the purposes of
+   * declaring the filter, it doesn't have to immediately pass a
+   * is_callable($callable) check.
+   *
+   * @param callable|array{class-string, string}|null $callable
+   *   The callable to retrieve the context for.
+   *
+   * @return string
+   *   The context of the callable.
+   *
+   * @see https://twig.symfony.com/doc/3.x/advanced.html#definition-vs-runtime
+   */
+  private function getTwigCallableContext(array|callable|null $callable): string {
+    if (\is_callable($callable)) {
+      return $this->getCallableContext($callable);
+    }
+
+    if ($callable === NULL) {
+      // Matches default from `getCallableContext()`.
+      return 'unknown';
+    }
+
+    // Mostly matches array case for static method call in
+    // `getCallableContext()`.
+    return \sprintf('class: %s, method: %s', $callable[0], $callable[1]);
   }
 
   /**
@@ -111,7 +146,7 @@ trait DataCollectorTrait {
       }
     }
 
-    return implode(', ', $data);
+    return \implode(', ', $data);
   }
 
   /**
@@ -128,19 +163,19 @@ trait DataCollectorTrait {
       return -1;
     }
 
-    $value = strtolower($value);
-    $max = strtolower(ltrim($value, '+'));
-    if (str_starts_with($max, '0x')) {
-      $max = intval($max, 16);
+    $value = \strtolower($value);
+    $max = \strtolower(\ltrim($value, '+'));
+    if (\str_starts_with($max, '0x')) {
+      $max = \intval($max, 16);
     }
-    elseif (str_starts_with($max, '0')) {
-      $max = intval($max, 8);
+    elseif (\str_starts_with($max, '0')) {
+      $max = \intval($max, 8);
     }
     else {
-      $max = intval($max);
+      $max = \intval($max);
     }
 
-    $max *= match (substr($value, -1)) {
+    $max *= match (\substr($value, -1)) {
       't' => 1024 * 1024 * 1024 * 1024,
       'g' => 1024 * 1024 * 1024,
       'm' => 1024 * 1024,
